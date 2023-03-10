@@ -40,6 +40,14 @@
   become: no
   when: distro=="arch"
 
+- name: If you forgot to execute gim after grub update
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    line: alias regkrn="sudo mkinitcpio -P"
+    create: yes
+  become: no
+  when: distro=="arch" 
+
 - name: Run neofecth when zsh is started
   lineinfile:
     path: /home/{{ user }}/.zshrc
