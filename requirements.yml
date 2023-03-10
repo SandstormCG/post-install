@@ -1,0 +1,19 @@
+- name: common
+  src: git@github.com:SandstormCG/role-common.git
+  scm: git
+
+- name: desktop-apps
+  src: git@github.com:SandstormCG/role-desktop-apps.git
+  scm: git
+
+- name: gaming
+  src: git@github.com:SandstormCG/role-gaming.git
+  scm: git
+
+- name: server-apps
+  src: git@github.com:SandstormCG/role-server-apps.git
+  scm: git
+
+- name: system-settings
+  src: git@github.com:SandstormCG/role-system-settings.git
+  scm: git

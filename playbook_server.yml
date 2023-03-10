@@ -1,0 +1,118 @@
+---
+- hosts: "{{ ansible_host }}"
+  remote_user: "{{ user }}"
+  vars_files:
+    - vars.yml
+
+  #debugger: on_failed
+
+
+  # Supported distros 
+    # For desktop: eos (Endeavouros), tw (openSuSe Tumbleweed), neon (KDE neon)
+    # For server: leap (OpenSuSe Leap), us (Ubuntu Server)
+
+  pre_tasks:
+
+    # Sever facts
+    - name: Set OpenSuSe Leap vars/facts
+      set_fact:
+        distro: leap
+      when: ansible_distribution=="openSUSE Leap"
+
+    - name: Set Ubuntu Server vars/facts
+      set_fact:
+        distro: ub
+      when: ansible_distribution=="Ubuntu Server"
+
+
+    - name: Set groups var for tw/leap
+      set_fact:
+        group: users
+      when: ( distro=="tw" ) or ( distro=="leap" )
+
+    - name: Set groups var for non suse based distros
+      set_fact:
+        group: "{{ user }}"
+      when: ( distro=="arch" ) or ( distro=="neon" ) or ( distro=="ub" ) 
+
+    #######################################
+    ##### Load vars for distros
+    #######################################
+
+    - include_vars: vars/arch.yml
+      when: distro=="arch"
+
+    - include_vars: vars/tw.yml
+      when: distro=="tw"
+
+    - include_vars: vars/neon.yml
+      when: distro=="neon"
+
+    #######################################
+    ##### Load server vars & create group 4 leap
+    #######################################
+
+    - name: Create group for the user with same name (compat)
+      group:
+        name: "{{ user }}"
+        state: present
+        gid: 1001
+      become: yes
+      when: distro=="leap"
+
+    - name: Add user to secondary group without being removed from the others
+      user:
+        name: "{{ user }}"
+        groups: "{{ user }}"
+        append: yes
+      become: yes
+      when: distro=="leap"
+
+    - name: Variable for uid
+      command: "id -u {{ user }}"
+      register: uid_command
+
+    - name: Set user_uid var
+      set_fact:
+        user_uid: "{{ uid_command.stdout }}"
+
+    - name: Variable for gid
+      command: "id -g {{ user }}"
+      register: gid_command
+
+    - name: Set user_gid var
+      set_fact:
+        user_gid: "{{ gid_command.stdout }}"
+
+    #######################################
+    ##### Add entries to /etc/hosts
+    #######################################    
+
+    - name: Add hosts file entries
+      lineinfile: 
+        dest: /etc/hosts
+        line: '{{ server_ip }} {{ item }}'
+      with_items:
+        - "{{ subdomains }}"
+      become: yes
+
+    ########################################
+    ###### PRE TASKS
+    ########################################
+
+    - name: Check installed gitea
+      stat:
+        path: /usr/local/bin/gitea
+      register: docker_inst
+      become: yes
+
+    - name: Check installed nginx
+      stat:
+        path: /etc/nginx/snippets/auth.conf
+      register: nginx_inst
+      become: yes
+
+  roles:
+    - common
+    - server-apps
+

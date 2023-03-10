@@ -1,6 +1,0 @@
-- name: Install extra yay packages
-  yay:
-    name: "{{ item }}"
-    state: present
-  become: yes 
-  with_items: "{{ yay_packages }}"

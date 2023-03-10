@@ -1,7 +1,0 @@
-- name: Add nvidia repo repo
-  zypper_repository:
-    name: Nvidia
-    repo: 'https://download.nvidia.com/opensuse/tumbleweed'
-    runrefresh: true
-    auto_import_keys: true
-  become: yes

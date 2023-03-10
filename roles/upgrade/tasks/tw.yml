@@ -1,6 +1,0 @@
-- name: Update all zypper packages
-  zypper:
-    name: '*'
-    state: dist-upgrade
-    update_cache: true
-  become: yes

@@ -5,6 +5,14 @@ NOTE: This is a merge between some different ansible project into just a cleaner
 On desktop systems `systemctl start sshd` to execute the playbook from another computer, and stop it after install.
 
 
+### Playbook variables
+
+* ansible_host --> hostname
+* user --> Username for the installation user
+* subdomains --> Array with subdomains to add to /etc/hosts
+* server_ip --> Ip for the subdomains
+
+
 ### VM Config (Single GPU-Passthrough qemu-kvm)
 
 Configure IIOMU on the system after install to be able to do single GPU passthrough 

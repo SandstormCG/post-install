@@ -1,7 +1,0 @@
-- name: Install timeshift packages
-  yay:
-    name: 
-      - timeshift
-      - timeshift-autosnap
-    state: present
-  become: yes

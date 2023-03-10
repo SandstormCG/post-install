@@ -1,6 +1,0 @@
-# Only implemented for arch right now
-- name: install rolisteam
-  yay:
-    name: rolisteam 
-    state: present
-  become: yes

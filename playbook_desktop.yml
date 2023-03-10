@@ -1,0 +1,94 @@
+---
+- hosts: "{{ ansible_host }}"
+  remote_user: "{{ user }}"
+  vars_files:
+    - vars.yml
+
+  #debugger: on_failed
+
+
+  # Supported distros 
+    # For desktop: eos (Endeavouros), tw (openSuSe Tumbleweed), neon (KDE neon)
+    # For server: leap (OpenSuSe Leap), us (Ubuntu Server)
+
+  pre_tasks:
+
+    # Desktop facts
+    - name: Set OpenSuSe Tumbleweed vars/facts
+      set_fact:
+        distro: tw
+        distro_type: desktop
+      when: ansible_distribution=="openSUSE Tumbleweed" 
+
+    - name: Set Endeavouros vars/facts
+      set_fact:
+        distro: arch
+        distro_type: desktop
+      when: ansible_distribution=="Archlinux"
+
+    - name: Set KDE Neon vars/facts
+      set_fact:
+        distro: neon
+        distro_type: desktop
+      when: ansible_distribution=="KDE neon"
+
+    - name: Set groups var for tw/leap
+      set_fact:
+        group: users
+      when: ( distro=="tw" ) or ( distro=="leap" )
+
+    - name: Set groups var for non suse based distros
+      set_fact:
+        group: "{{ user }}"
+      when: ( distro=="arch" ) or ( distro=="neon" ) or ( distro=="ub" ) 
+
+    #######################################
+    ##### Add entries to /etc/hosts
+    #######################################    
+
+    - name: Add hosts file entries
+      lineinfile: 
+        dest: /etc/hosts
+        line: '{{ server_ip }} {{ item }}'
+      with_items:
+        - "{{ subdomains }}"
+      become: yes
+
+    ########################################
+    ###### PRE TASKS
+    ########################################
+
+    - name: Check installed syncthing
+      stat:
+        path: /usr/lib/systemd/user/syncthing.service
+      register: st_inst
+      become: yes
+      
+    - name: Enable the passwordless execution to be able to install aur packages
+      lineinfile:
+        path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman
+        state: present
+        line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        validate: /usr/sbin/visudo -cf %s
+        create: yes
+      become: yes
+      when: distro=="arch"
+
+  roles:
+    - common
+    - system-settings
+    - gaming
+    - desktop-apps
+
+  post_tasks:
+
+    - name: Disable the passwordless execution to be able to install aur packages
+      lineinfile:
+        path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman
+        state: present
+        line: "#{{ user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        search_string: "{{ user }} ALL"
+        validate: /usr/sbin/visudo -cf %s
+        create: yes
+      become: yes
+      when: distro=="arch"

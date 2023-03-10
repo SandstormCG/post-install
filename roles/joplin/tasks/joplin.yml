@@ -1,9 +1,0 @@
-
-- name: Install Joplin on Neon and Tumbleweed
-  include_tasks: joplin_neon_tw.yml
-  when: (distro=="neon") or (distro=="tw")
-
-
-- name: Install Joplin on Arch
-  include_tasks: joplin_arch.yml
-  when: distro=="arch"

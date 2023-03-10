@@ -1,5 +1,0 @@
-- name: Install discord for arch and tw
-  package: 
-    name: discord
-    state: present
-  become: yes

@@ -1,9 +1,0 @@
-- name: Is joplin installed?
-  stat:
-    path: ~/.joplin/Joplin.AppImage
-  register: joplin_appim
-
-- name: Install Joplin
-  shell: wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
-  become: no
-  when: not joplin_appim.stat.exists

@@ -1,6 +1,0 @@
-- name: Install joplin AUR package
-  yay: 
-    name: joplin
-    state: present
-  state: present
-  become: yes

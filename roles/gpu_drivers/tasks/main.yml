@@ -1,9 +1,0 @@
----
-# tasks file for gpu_drivers
-- name: Install AMD GPU drivers
-  include_tasks: amd.yml
-  when: gpu=="amd"
-
-- name: Install Nvidia drivers
-  include_tasks: nvidia.yml
-  when: gpu=="nvidia"

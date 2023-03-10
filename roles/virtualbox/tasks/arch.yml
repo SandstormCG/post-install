@@ -1,7 +1,0 @@
-- name: Install virtualbox
-  pacman:
-    name: 
-      - virtualbox
-      - virtualbox-host-dkms
-    state: present
-  become: yes

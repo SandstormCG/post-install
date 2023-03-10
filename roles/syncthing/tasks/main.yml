@@ -1,9 +1,0 @@
-- name: Install syncthing
-  package:
-    name: syncthing
-    state: present
-  become: yes
-
-- name: Add devices
-  shell: syncthing cli config devices add --device-id {{ item.sid }} --name {{ item.name }}
-  with_items: syncthing_devices

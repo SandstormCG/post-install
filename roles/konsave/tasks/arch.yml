@@ -1,5 +1,0 @@
-- name: Install konsave on Arch
-  yay:
-    name: konsave
-    state: present
-  become: yes
