@@ -17,6 +17,9 @@ vm_name: win10
 selfsigned_certs: ["domain.crt","domain.key"]
 hostname: hostname
 konsave_config: konsave_config_name
+syncthing_devices:
+  - { sid: your_device_id, name: your_device_name }
+  - { sid: your_device_id2, name: your_device_name2 }
 
 
 # Variables for server playbook

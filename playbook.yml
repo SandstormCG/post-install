@@ -177,6 +177,7 @@
     - { role: element, when: distro_type=="desktop" } 
     - { role: joplin, when: distro_type=="desktop" } 
     - { role: firewall, when: distro_type=="server" } 
+    - syncthing
     - { role: bulk, when: distro_type=="desktop" }
 
   post_tasks:
