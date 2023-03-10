@@ -2,8 +2,6 @@ NOTE: This is a merge between some different ansible project into just a cleaner
 
 # Steps to install
 
-Tras instalar aplicar los shortcuts de kde (.kksrc en la carpeta config/files)
-
 On desktop systems `systemctl start sshd` to execute the playbook from another computer, and stop it after install.
 
 
