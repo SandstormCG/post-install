@@ -115,4 +115,5 @@
   roles:
     - common
     - server-apps
+    - unity
 
