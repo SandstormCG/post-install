@@ -5,9 +5,3 @@
       - virtualbox-host-dkms
     state: present
   become: yes
-
-- name: Install oracle vbox extensions
-  yay:
-    name: virtualbox-ext-oracle
-    state: present
-  become: yes
