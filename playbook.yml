@@ -162,7 +162,6 @@
     # Apps
 
     - { role: calibre, when: distro_type=="desktop" }  
-    - { role: kodi, when: distro_type=="desktop" }  
     - { role: codecs, when: distro=="tw" }  
     - { role: konsave, when: distro_type=="desktop" }  
     - { role: vscodium, when: distro_type=="desktop" }  
