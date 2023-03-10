@@ -3,13 +3,16 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
-    user: "{{ jellyfin_uid }}:{{ jellyfin_gid }}"
+    user: "{{ user_uid }}:{{ user_gid }}"
     network_mode: "host"
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - {{ jellyfin_movies }}:/movies
-      - {{ jellyfin_shows }}:/shows
+      - "{{ jellyfin_movies }}:/movies"
+      - "{{ jellyfin_shows }}:/shows"
+      - "{{ jellyfin_comics}}:/comics"
+      - "{{ jellyfin_books }}:/books"
+      - "{{ jellyfin_music }}:/music"
     restart: "unless-stopped"
     # Optional - alternative address used for autodiscovery
     environment:

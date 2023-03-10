@@ -23,16 +23,7 @@
 
 - name: Create a list of dockers
   set_fact:
-    dockers: ["gitea","jellyfin"]
-
-- name: Set extra docker
-  set_fact:
-    extra: yes
-
-- name: Adding vars
-  include_vars: "{{ ansible_ext }}vars/{{ item }}.yml"
-  with_items:
-    - "{{ dockers }}"
+    dockers: ["jellyfin"]
 
 - name: Create composer directory if it does not exist
   file:
@@ -52,14 +43,6 @@
     owner: "{{ user }}"
   with_items:
     - "{{ dockers }}"
-
-- name: Generate docker-compose file
-  template:
-    src: "{{ ansible_ext }}templates/extra-compose.j2"
-    dest: "/home/{{ user }}/composers/extra/docker-compose.yml"
-    group: "{{ group }}"
-    owner: "{{ user }}"
-  when: extra
 
 ###########################################
 ## Configure nginx reverse proxy
@@ -86,16 +69,6 @@
     - "{{ dockers }}"
   become: yes 
 
-- name: Generate nginx conf file
-  template:
-    src: "{{ ansible_ext }}templates/extra-site.j2"
-    dest: "{{ conf_folder }}/extra.conf"
-    group: root
-    owner: root
-    mode: 0644
-  become: yes 
-  when: extra
-
 - name: Soft link to enable site 
   file:
     src: "{{ conf_folder }}/{{ item }}"
@@ -105,14 +78,6 @@
     - "{{ dockers }}"
   become: yes
   when: distro=="ub"
-
-- name: Soft link to enable site 
-  file:
-    src: "{{ conf_folder }}/extra"
-    dest: "{{ conf_folder }}extra"
-    state: link
-  become: yes
-  when: (extra=="yes") and (distro=="ub")
  
 #- name: Restart nginx service 
 #  systemd:

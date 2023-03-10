@@ -8,19 +8,19 @@
     state: present
   become: yes
 
-- name: Enable and start grub-btrfs.service
-  systemd:
-    name: grub-btrfs.service
-    state: started
-    enabled: yes
-  become: yes
+#- name: Enable and start grub-btrfs.service
+#  systemd:
+#    name: grub-btrfs.service
+#    state: enable
+#    enabled: yes
+#  become: yes
 
-- name: Enable and start grub-btrfs.service
-  systemd:
-    name: grub-btrfs.service
-    state: started
-    enabled: yes
-  become: yes
+#- name: Enable and start grub-btrfs.service
+#  systemd:
+#    name: grub-btrfs.service
+#    state: started
+#    enabled: yes
+#  become: yes
         
 #- name: Enable and start grub-btrfs.path
 #  systemd:

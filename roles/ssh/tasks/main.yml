@@ -14,7 +14,9 @@
   
 - name: Copy ssh keys
   copy:
-    src: "{{ ansible_ext }}/files/{{ ssh_keys }}"
-    dest: "/home/{{ user }}/.ssh/{{ ssh_keys }}"
+    src: "{{ ansible_ext }}files/{{ item }}"
+    dest: "/home/{{ user }}/.ssh/{{ item }}"
+    mode: 0600
+  with_items: "{{ ssh_keys }}"
   when: not ssh_key.stat.exists
   become: no

@@ -32,6 +32,14 @@
     create: yes
   become: no
 
+- name: Grub install & make 
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    line: alias gim="sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=EndeavourOS && sudo grub-mkconfig -o /boot/grub/grub.cfg"
+    create: yes
+  become: no
+  when: distro=="arch"
+
 - name: Run neofecth when zsh is started
   lineinfile:
     path: /home/{{ user }}/.zshrc

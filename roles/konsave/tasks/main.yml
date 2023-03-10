@@ -1,6 +1,6 @@
 - name: Install konsave for neon and tumbleweed
   include_tasks: neon_tw.yml
-  when: ( distro="neon" ) or ( distro=="tw" )
+  when: ( distro=="neon" ) or ( distro=="tw" )
 
 - name: Install konsave for arch
   include_tasks: arch.yml

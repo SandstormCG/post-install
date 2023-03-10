@@ -1,6 +1,6 @@
 - name: Copy the tartarus binds
   copy:
-    src: "{{ ansible_ext }}/{{ item }}.hwdb"
+    src: "{{ ansible_ext }}files/{{ item }}.hwdb"
     dest: "/etc/udev/hwdb.d/{{ item }}.hwdb"
     owner: root
     group: root

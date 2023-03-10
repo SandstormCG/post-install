@@ -9,3 +9,6 @@
 - name: Install vscodium on Arch
   include_tasks: arch.yml
   when: distro=="arch"
+
+- name: Install TODO Tree extension
+  shell: codium --install-extension Gruntfuggly.todo-tree

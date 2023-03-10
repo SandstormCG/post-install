@@ -155,7 +155,7 @@
     - { role: gpu_drivers, when: distro_type=="desktop" } 
     - { role: ssh, when: distro_type=="desktop" }
     - { role: certs, when: distro_type=="desktop" } 
-    - { role: dockers, when: (distro_type=="server") and (not docker_inst.stat.exists)} 
+    - { role: docker, when: (distro_type=="server") and (not docker_inst.stat.exists)} 
     - { role: nginx, when: (distro_type=="server") and (not nginx_inst.stat.exists)} 
     - { role: fail2ban, when: distro_type=="server" } 
 
@@ -177,35 +177,10 @@
     - { role: element, when: distro_type=="desktop" } 
     - { role: joplin, when: distro_type=="desktop" } 
     - { role: firewall, when: distro_type=="server" } 
-
-
+    - { role: bulk, when: distro_type=="desktop" }
 
   post_tasks:
 
-    - name: Install dev apps from repo
-      package:
-        name:
-          - tellico
-          - digikam
-          - qmmp
-          - cmake
-          - kdevelop
-          - lldb
-          - markdownpart
-          - keepassxc
-          - ktorrent
-          - htop
-          - grub-customizer
-          - yakuake
-          - plasma-browser-integration
-          - partitionmanager
-          - syncthing
-          - meld
-        state: present
-      become: yes
-      when: distro_type=="desktop"
-
-    
     - name: Disable the passwordless execution to be able to install aur packages
       lineinfile:
         path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman

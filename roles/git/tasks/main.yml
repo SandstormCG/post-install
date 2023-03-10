@@ -4,13 +4,13 @@
     state: present
   become: yes
 
-- name: Set gir config global user email
+- name: Set git config global user email
   git_config:
     name: user.email
     scope: global
     value: "{{ git_email }}"
 
-- name: Set gir config global user name
+- name: Set git config global user name
   git_config:
     name: user.name
     scope: global
