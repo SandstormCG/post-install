@@ -3,13 +3,13 @@
     name: nginx
   become: yes
 
-
 - name: Copy the cert files
   copy:
-    src: "{{ ansible_ext }}/files/{{ item }}"
+    src: "{{ ansible_ext }}files/{{ item }}"
     dest: "/etc/ssl/certs/{{ item }}"
     owner: root
     group: root
+    force: yes
   become: yes
   with_items: "{{ selfsigned_certs }}"
 

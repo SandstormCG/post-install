@@ -21,12 +21,16 @@
 ## Generate docker-compose files
 ###########################################
 
-#- name: Create a list of dockers
-#  set_fact:
-#    dockers: ["gitea","jellyfin"]
+- name: Create a list of dockers
+  set_fact:
+    dockers: ["gitea","jellyfin"]
+
+- name: Set extra docker
+  set_fact:
+    extra: yes
 
 - name: Adding vars
-  include_vars: "{{ ansible_ext }}/vars/{{ item }}.yml"
+  include_vars: "{{ ansible_ext }}vars/{{ item }}.yml"
   with_items:
     - "{{ dockers }}"
 
@@ -49,14 +53,32 @@
   with_items:
     - "{{ dockers }}"
 
+- name: Generate docker-compose file
+  template:
+    src: "{{ ansible_ext }}templates/extra-compose.j2"
+    dest: "/home/{{ user }}/composers/extra/docker-compose.yml"
+    group: "{{ group }}"
+    owner: "{{ user }}"
+  when: extra
+
 ###########################################
 ## Configure nginx reverse proxy
 ###########################################
 
+- name: Set Leap nginx conf folder
+  set_fact:
+    conf_folder: /etc/nginx/vhosts.d 
+  when: distro=="leap"
+
+- name: Set Ubuntu nginx conf folder
+  set_fact:
+    conf_folder: /etc/nginx/sites-available
+  when: distro=="ub"
+
 - name: Generate nginx conf file
   template:
     src: "{{ item }}-site.j2"
-    dest: "/etc/nginx/vhosts.d/{{ item }}.conf"
+    dest: "{{ conf_folder }}/{{ item }}.conf"
     group: root
     owner: root
     mode: 0644
@@ -64,17 +86,36 @@
     - "{{ dockers }}"
   become: yes 
 
-#- name: Soft link to enable site 
-#  file:
-#    src: "/etc/nginx/sites-available/{{ item }}"
-#    dest: "/etc/nginx/sites-enabled/{{ item }}"
-#    state: link
-#  with_items:
-#    - "{{ dockers }}"
-#  become: yes
+- name: Generate nginx conf file
+  template:
+    src: "{{ ansible_ext }}templates/extra-site.j2"
+    dest: "{{ conf_folder }}/extra.conf"
+    group: root
+    owner: root
+    mode: 0644
+  become: yes 
+  when: extra
 
-- name: Restart nginx service 
-  systemd:
-    name: nginx
-    state: restarted
+- name: Soft link to enable site 
+  file:
+    src: "{{ conf_folder }}/{{ item }}"
+    dest: "{{ conf_folder }}/{{ item }}"
+    state: link
+  with_items:
+    - "{{ dockers }}"
   become: yes
+  when: distro=="ub"
+
+- name: Soft link to enable site 
+  file:
+    src: "{{ conf_folder }}/extra"
+    dest: "{{ conf_folder }}extra"
+    state: link
+  become: yes
+  when: (extra=="yes") and (distro=="ub")
+ 
+#- name: Restart nginx service 
+#  systemd:
+#    name: nginx
+#    state: restarted
+#  become: yes

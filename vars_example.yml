@@ -28,8 +28,6 @@ domain: domain.com
 nginx_whitelist: yes 
 volumes_folder: /dockers/volumes/folder/
 ext_drives: /external/folder/
-user_uid: user_uid
-user_gid: user_gid
 ssl_certificate: domain-selfsigned.crt
 ssl_certificate_key: domain-selfsigned.key 
 git_user: git_user

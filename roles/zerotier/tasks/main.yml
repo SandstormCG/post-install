@@ -14,7 +14,7 @@
 
 - name: Install Zerotier on Tumbleweed and Leap
   include_tasks: tw_leap.yml
-  when: ( (distro=="tw") or (distro=="leap") ) and ( not zt_inst.stat.exists )
+  when: ( (distro=="tw") or (distro=="leap") ) and ( not zt_service.stat.exists )
 
 # Common tasks
 

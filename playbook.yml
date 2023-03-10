@@ -70,6 +70,30 @@
       when: distro=="neon"
 
     #######################################
+    ##### Load server vars
+    #######################################
+
+    - name: Variable for uid
+      command: "id -u {{ user }}"
+      register: uid_command
+      when: distro_type=="server"
+
+    - name: Set user_uid var
+      set_fact:
+        user_uid: "{{ uid_command.stdout }}"
+      when: distro_type=="server"
+
+    - name: Variable for gid
+      command: "id -g {{ user }}"
+      register: gid_command
+      when: distro_type=="server"
+
+    - name: Set user_gid var
+      set_fact:
+        user_gid: "{{ gid_command.stdout }}"
+      when: distro_type=="server"
+
+    #######################################
     ##### Add entries to /etc/hosts
     #######################################    
 
@@ -130,9 +154,10 @@
     - zerotier 
     - { role: gpu_drivers, when: distro_type=="desktop" } 
     - { role: ssh, when: distro_type=="desktop" }
-    # Old role for adding self signed certs
-    #- { role: certs, when: distro_type=="desktop" } 
-
+    - { role: certs, when: distro_type=="desktop" } 
+    - { role: dockers, when: (distro_type=="server") and (not docker_inst.stat.exists)} 
+    - { role: nginx, when: (distro_type=="server") and (not nginx_inst.stat.exists)} 
+    - { role: fail2ban, when: distro_type=="server" } 
 
     # Apps
 
@@ -151,9 +176,9 @@
     - { role: virtualbox, when: distro_type=="desktop" } 
     - { role: element, when: distro_type=="desktop" } 
     - { role: joplin, when: distro_type=="desktop" } 
-    - { role: docker, when: (distro_type=="server") and (not docker_inst.stat.exists)} 
-    - { role: nginx, when: (distro_type=="server") and (not nginx_inst.stat.exists)} 
     - { role: firewall, when: distro_type=="server" } 
+
+
 
   post_tasks:
 

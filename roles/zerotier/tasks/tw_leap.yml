@@ -11,6 +11,7 @@
       - cargo
       - libopenssl-1_1-devel
     state: present
+  become: yes
 
 - name: Build the default target
   make:
@@ -22,11 +23,14 @@
     target: install
   become: yes
 
-#- name: Join zerotier-one network
-#  shell: /home/{{ user }}/bin/installers/zerotier/zerotier-one -d
-#  become: yes
+- name: Create folder for service files
+  file:
+    path: /lib/systemd/system/
+    state: directory
+  become: yes
 
 - name: Copy the zerotier-one service file
   copy:
     src: zerotier-one.service
     dest: /lib/systemd/system/zerotier-one.service
+  become: yes

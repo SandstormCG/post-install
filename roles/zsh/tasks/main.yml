@@ -23,6 +23,7 @@
 - name: Set Zsh as default shell
   shell: chsh -s /bin/zsh {{ user }}
   when: not zsh_omz.stat.exists
+  become: yes
 
 - name: Please alias for sudo
   lineinfile:
@@ -37,6 +38,14 @@
     line: neofetch
     create: yes
   become: no
+
+- name: Set the theme to agnoster for servers
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    search_string: 'ZSH_THEME'
+    line: ZSH_THEME="agnoster"
+  become: no
+  when: distro_type=="server" 
 
 - name: Download & add passion theme
   get_url:
@@ -100,4 +109,8 @@
       if [ -d "$HOME/.local/bin/Scripts" ] ; then
           PATH="$HOME/.local/bin/Scripts:$PATH"
       fi
+      # set PATH so it includes cargo bins
+      if [ -d "$HOME/.cargo/bin" ] ; then
+          PATH="$HOME/.cargo/bin:$PATH"
+      fi 
 
