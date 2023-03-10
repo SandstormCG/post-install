@@ -165,7 +165,6 @@
     - { role: codecs, when: distro=="tw" }  
     - { role: konsave, when: distro_type=="desktop" }  
     - { role: vscodium, when: distro_type=="desktop" }  
-    - { role: sublime, when: distro_type=="desktop" }  
     - { role: discord, when: distro_type=="desktop" } 
     - { role: rolisteam, when: distro_type=="desktop" } 
     - { role: gaming, when: distro_type=="desktop" } 
