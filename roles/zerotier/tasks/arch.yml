@@ -1,0 +1,5 @@
+  - name: Install Zerotier
+    package: 
+      name: zerotier-one 
+      state: present
+    become: yes

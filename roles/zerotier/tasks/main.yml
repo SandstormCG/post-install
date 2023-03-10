@@ -1,0 +1,34 @@
+- name: Install Zerotier on Arch
+  include_tasks: arch.yml
+  when: (distro=="arch")
+
+- name: Install Zerotier on Neon and Ubuntu Server
+  include_tasks: neon_ub.yml
+  when: (distro=="ub") or (distro=="neon")
+
+- name: Check installed zerotier
+  stat:
+    path: /etc/systemd/system/zerotier-one.service
+  register: zt_service
+  become: yes
+
+- name: Install Zerotier on Tumbleweed and Leap
+  include_tasks: tw_leap.yml
+  when: ( (distro=="tw") or (distro=="leap") ) and ( not zt_inst.stat.exists )
+
+# Common tasks
+
+- name: Enable and start zerotier-one
+  systemd:
+    name: zerotier-one
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Pause to give zerotier-one time to connect
+  pause:
+    seconds: 10
+
+- name: Join zerotier-one network
+  shell: zerotier-cli join {{ zt_network }}
+  become: yes

@@ -1,0 +1,10 @@
+- name: Install python needed packages
+  package:
+    name: 
+      - python-setuptools
+      - python-pip
+  become: yes
+  
+- name: Install konsave
+  pip:
+    name: konsave

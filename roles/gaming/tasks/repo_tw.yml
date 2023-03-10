@@ -1,0 +1,6 @@
+- name: Add wine repository for Tumbleweed
+  zypper_repository:
+    name: Wine
+    repo: 'https://download.opensuse.org/repositories/Emulators:/Wine/openSUSE_Tumbleweed/'
+    state: present
+  become: yes

@@ -1,0 +1,44 @@
+- name: Install nginx if it isn't already
+  package:
+    name: nginx
+  become: yes
+
+
+- name: Copy the cert files
+  copy:
+    src: "{{ ansible_ext }}/files/{{ item }}"
+    dest: "/etc/ssl/certs/{{ item }}"
+    owner: root
+    group: root
+  become: yes
+  with_items: "{{ selfsigned_certs }}"
+
+- name: Create snippers directory
+  file:
+    path: /etc/nginx/snippets/
+    state: directory
+  become: yes
+
+- name: Generate ssl-params.conf file
+  template:
+    src: ssl-params.j2
+    dest: /etc/nginx/snippets/ssl-params.conf
+    group: root
+    owner: root
+  become: yes
+  
+- name: Generate whitelist.conf file
+  template:
+    src: whitelist.j2
+    dest: /etc/nginx/snippets/whitelist.conf
+    group: root
+    owner: 
+  become: yes
+
+- name: Generate auth.conf file
+  template:
+    src: auth.j2
+    dest: /etc/nginx/snippets/auth.conf
+    group: root
+    owner: root
+  become: yes

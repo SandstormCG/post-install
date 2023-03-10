@@ -1,0 +1,7 @@
+- name: Install virtualbox
+  zypper:
+    name: 
+      - virtualbox
+      - virtualbox-qt
+    state: present
+  become: yes

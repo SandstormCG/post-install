@@ -1,0 +1,14 @@
+---
+- name: Adding amdgpu repo on KDE Neon
+  include_tasks: amd_neon_repo.yml
+  when: ansible_distribution=="KDE neon"
+
+
+# Installing amd packages from repo
+- name: Install amd drivers with vulkan dependencies
+  package:
+    name: "{{ item }}"
+  with_items: "{{ amd_packages }}"
+  become: yes
+
+

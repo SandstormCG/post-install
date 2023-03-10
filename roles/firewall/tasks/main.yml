@@ -1,0 +1,7 @@
+- name: Configure firewalld on OpenSuSe Leap
+  include_tasks: firewalld.yml
+  when: distro=="leap"
+
+- name: Configure ufw on Ubuntu Server
+  include_tasks: ufw.yml
+  when: distro=="ub"

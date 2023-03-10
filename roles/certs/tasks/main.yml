@@ -1,0 +1,15 @@
+- name: Is phasegate cert installed?
+  stat:
+    path: "/etc/ca-certificates/trust-source/anchors/{{ cert_file }}"
+  register: pg_cert
+
+- name: Add pem file to trusted certificates folder
+  copy:
+    src: "{{ ansible_ext }}/files/{{ cert_file }}"
+    dest: "/etc/ca-certificates/trust-source/anchors/{{ cert_file }}"
+  when: not pg_cert.stat.exists  
+
+- name: Update trusted certificates
+  shell: update-ca-trust
+  become: yes
+  when: not pg_cert.stat.exists  

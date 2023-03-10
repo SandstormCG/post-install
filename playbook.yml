@@ -1,0 +1,193 @@
+---
+- hosts: "{{ ansible_host }}"
+  remote_user: "{{ user }}"
+  vars_files:
+    - vars.yml
+
+  #debugger: on_failed
+
+
+  # Supported distros 
+    # For desktop: eos (Endeavouros), tw (openSuSe Tumbleweed), neon (KDE neon)
+    # For server: leap (OpenSuSe Leap), us (Ubuntu Server)
+
+  pre_tasks:
+
+    # Desktop facts
+    - name: Set OpenSuSe Tumbleweed vars/facts
+      set_fact:
+        distro: tw
+        distro_type: desktop
+      when: ansible_distribution=="openSUSE Tumbleweed" 
+
+    - name: Set Endeavouros vars/facts
+      set_fact:
+        distro: arch
+        distro_type: desktop
+      when: ansible_distribution=="Archlinux"
+
+    - name: Set KDE Neon vars/facts
+      set_fact:
+        distro: neon
+        distro_type: desktop
+      when: ansible_distribution=="KDE neon"
+
+    # Sever facts
+    - name: Set OpenSuSe Leap vars/facts
+      set_fact:
+        distro: leap
+        distro_type: server
+      when: ansible_distribution=="openSUSE Leap"
+
+    - name: Set Ubuntu Server vars/facts
+      set_fact:
+        distro: ub
+        distro_type: server
+      when: ansible_distribution=="Ubuntu Server"
+
+
+    - name: Set groups var for tw/leap
+      set_fact:
+        group: users
+      when: ( distro=="tw" ) or ( distro=="leap" )
+
+    - name: Set groups var for non suse based distros
+      set_fact:
+        group: "{{ user }}"
+      when: ( distro=="arch" ) or ( distro=="neon" ) or ( distro=="ub" ) 
+
+    #######################################
+    ##### Load vars for distros
+    #######################################
+
+    - include_vars: vars/arch.yml
+      when: distro=="arch"
+
+    - include_vars: vars/tw.yml
+      when: distro=="tw"
+
+    - include_vars: vars/neon.yml
+      when: distro=="neon"
+
+    #######################################
+    ##### Add entries to /etc/hosts
+    #######################################    
+
+    - name: Add hosts file entries
+      lineinfile: 
+        dest: /etc/hosts
+        line: '{{ server_ip }} {{ item }}'
+      with_items:
+        - "{{ subdomains }}"
+      become: yes
+
+    ########################################
+    ###### PRE TASKS
+    ########################################
+
+    - name: Create bin and installers directory
+      file:
+        path: "/home/{{ user }}/bin/installers"
+        state: directory
+      when: distro=="tw"
+
+    - name: Set a hostname
+      hostname:
+        name: "{{ hostname }}"
+      when: (distro=="tw") or (distro_type=="leap")
+
+    - name: Enable the passwordless execution to be able to install aur packages
+      lineinfile:
+        path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman
+        state: present
+        line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        validate: /usr/sbin/visudo -cf %s
+        create: yes
+      become: yes
+      when: distro=="arch"
+
+    - name: Check installed gitea
+      stat:
+        path: /usr/local/bin/gitea
+      register: docker_inst
+      become: yes
+
+    - name: Check installed nginx
+      stat:
+        path: /etc/nginx/snippets/auth.conf
+      register: nginx_inst
+      become: yes
+
+  roles:
+    # Core
+    
+    - upgrade
+    - { role: fsnaps, when: ( (distro=="ub") or ( distro=="neon" ) ) }
+    - { role: btrfs, when: distro=="arch" }
+    - { role: git, when: distro_type=="desktop" }
+    - zsh
+    - { role: bindings, when: distro_type=="desktop" } 
+    - zerotier 
+    - { role: gpu_drivers, when: distro_type=="desktop" } 
+    - { role: ssh, when: distro_type=="desktop" }
+    # Old role for adding self signed certs
+    #- { role: certs, when: distro_type=="desktop" } 
+
+
+    # Apps
+
+    - { role: calibre, when: distro_type=="desktop" }  
+    - { role: kodi, when: distro_type=="desktop" }  
+    - { role: codecs, when: distro=="tw" }  
+    - { role: konsave, when: distro_type=="desktop" }  
+    - { role: vscodium, when: distro_type=="desktop" }  
+    - { role: sublime, when: distro_type=="desktop" }  
+    - { role: discord, when: distro_type=="desktop" } 
+    - { role: rolisteam, when: distro_type=="desktop" } 
+    - { role: gaming, when: distro_type=="desktop" } 
+    - { role: "{{ some_role }}", when: distro_type=="server"}
+    - { role: "{{ some_other_role }}", when: distro=="arch" }
+    - { role: qemu, when: distro=="arch" } 
+    - { role: virtualbox, when: distro_type=="desktop" } 
+    - { role: element, when: distro_type=="desktop" } 
+    - { role: joplin, when: distro_type=="desktop" } 
+    - { role: docker, when: (distro_type=="server") and (not docker_inst.stat.exists)} 
+    - { role: nginx, when: (distro_type=="server") and (not nginx_inst.stat.exists)} 
+    - { role: firewall, when: distro_type=="server" } 
+
+  post_tasks:
+
+    - name: Install dev apps from repo
+      package:
+        name:
+          - tellico
+          - digikam
+          - qmmp
+          - cmake
+          - kdevelop
+          - lldb
+          - markdownpart
+          - keepassxc
+          - ktorrent
+          - htop
+          - grub-customizer
+          - yakuake
+          - plasma-browser-integration
+          - partitionmanager
+          - syncthing
+          - meld
+        state: present
+      become: yes
+      when: distro_type=="desktop"
+
+    
+    - name: Disable the passwordless execution to be able to install aur packages
+      lineinfile:
+        path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman
+        state: present
+        line: "#{{ user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        search_string: "{{ user }} ALL"
+        validate: /usr/sbin/visudo -cf %s
+        create: yes
+      become: yes
+      when: distro=="arch"

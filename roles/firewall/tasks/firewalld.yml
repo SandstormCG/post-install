@@ -1,0 +1,55 @@
+- name: Create variable from command
+  shell: ip link show | grep -Eio  "zt[a-z|0-9]+[a-z|0-9]" 
+  register: zt_interface
+
+- name: Valor de zt_interface
+  debug:
+    msg: "zt_interface: {{ zt_interface.stdout }}"
+
+- name: Add zerotier interface to home zone
+  firewalld:
+    zone: home
+    interface: "{{ zt_interface.stdout }}"
+    permanent: yes
+    state: enabled
+  become: yes
+
+- name: Allow https on public zone and eth0 network 
+  firewalld:
+    zone: public
+    service: https
+    permanent: yes
+    state: enabled
+  become: yes
+  
+- name: Allow syncthing on public zone and eth0 network 
+  firewalld:
+    zone: public
+    service: syncthing
+    permanent: yes
+    state: enabled
+  become: yes
+
+#- name: Allow zerotier on public zone and eth0 network
+#  firewalld:
+#    zone: public
+#    service: zerotier
+#    permanent: yes
+#    state: enabled
+#  become: yes
+
+- name: Allow zerotier on public zone and eth0 network
+  ansible.posix.firewalld:
+    port: 9993/udp
+    permanent: yes
+    state: enabled
+    zone: public
+  become: yes
+
+- name: Allow https on home zone and zt network 
+  firewalld:
+    zone: home
+    service: https
+    permanent: yes
+    state: enabled
+  become: yes

@@ -1,0 +1,20 @@
+- name: Install konsave for neon and tumbleweed
+  include_tasks: neon_tw.yml
+  when: ( distro="neon" ) or ( distro=="tw" )
+
+- name: Install konsave for arch
+  include_tasks: arch.yml
+  when: distro=="arch"
+
+
+- name: Copy konsave config
+  copy:
+    src: "{{ ansible_ext }}/files/{{ konsave_config }}.knsv"
+    dest: /home/{{ user }}/Documents/{{ konsave_config }}.knsv
+    force: yes
+
+- name: Import plasma config
+  shell: "konsave -i /home/{{ user }}/Documents/{{ konsave_config }}.knsv"
+
+- name: Apply plasma config
+  shell: "konsave -a {{ konsave_config }}"

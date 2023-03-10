@@ -1,0 +1,10 @@
+- name: Is calibre installed?
+  stat:
+    path: /usr/bin/calibre
+  register: calibre_bin
+
+- name: Install calibre
+  shell: sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin
+  ignore_errors: yes
+  become: yes
+  when: not calibre_bin.stat.exists

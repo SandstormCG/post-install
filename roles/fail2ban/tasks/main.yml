@@ -1,0 +1,11 @@
+- name: Install the package fail2ban
+  package:
+    name: fail2ban
+  become: yes
+    
+- name: Install config file with sshd jail
+  copy:
+    src: sshd.local
+    dest: /etc/fail2ban/fail2ban.d/
+    force: yes
+  become: yes

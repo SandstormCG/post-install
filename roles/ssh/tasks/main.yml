@@ -1,0 +1,20 @@
+- name: Are ssh keys already copied?
+  stat:
+    path: /home/{{ user }}/.ssh/id_rsa.pub
+  register: ssh_key
+
+- name: Create ssh directory
+  file:
+    path: /home/{{ user }}/.ssh/
+    state: directory
+    mode: "u+rw,g-rwx,o-rwx"
+  ignore_errors: yes
+  when: not ssh_key.stat.exists
+  become: no
+  
+- name: Copy ssh keys
+  copy:
+    src: "{{ ansible_ext }}/files/{{ ssh_keys }}"
+    dest: "/home/{{ user }}/.ssh/{{ ssh_keys }}"
+  when: not ssh_key.stat.exists
+  become: no

@@ -1,0 +1,19 @@
+- name: Install virtualbox for arch
+  include_tasks: arch.yml
+  when: distro=="arch"
+
+- name: Install virtualbox for neon
+  include_tasks: neon.yml
+  when: distro=="neon"
+
+- name: Install virtualbox for tw
+  include_tasks: tw.yml
+  when: distro=="tw"
+
+
+- name: adding existing user to virtualbox group
+  user:
+    name: '{{ user }}'
+    groups: vboxusers
+    append: yes
+  become: yes

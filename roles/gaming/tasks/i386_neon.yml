@@ -1,0 +1,4 @@
+- name: Add i386 architecture for neon
+  shell: dpkg --add-architecture i386
+  ignore_errors: yes
+  become: yes

@@ -1,0 +1,49 @@
+version: "3"
+
+networks:
+  gitea:
+    external: false
+
+services:
+  server:
+    image: gitea/gitea:1.13.3
+    container_name: gitea
+    environment:
+      - USER_UID={{ gitea_uid }}
+      - USER_GID={{ gitea_gid }}
+      - DB_TYPE=postgres
+      - DB_HOST=db:5432
+      - DB_NAME={{ gitea_db_name }}
+      - DB_USER={{ gitea_db_user }}
+      - DB_PASSWD={{ gitea_db_pass }}
+    restart: always
+    networks:
+      - gitea
+    volumes:
+      - /home/{{ git_user }}/.ssh/:/data/git/.ssh
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "127.0.0.1:{{ gitea_port }}:3000"
+      #- "222:22"
+      - "127.0.0.1:{{ gitea_ssh_port }}:22"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:9.6
+    restart: always
+    environment:
+      - POSTGRES_USER={{ gitea_db_user }}
+      - POSTGRES_PASSWORD={{ gitea_db_pass }}
+      - POSTGRES_DB={{ gitea_db_name }}
+    networks:
+      - gitea
+    volumes:
+      - gitea_db:/var/lib/postgresql/data
+volumes:
+  gitea_data:
+    driver: local
+  gitea_db:
+    driver: local

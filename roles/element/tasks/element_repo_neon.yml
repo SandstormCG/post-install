@@ -1,0 +1,12 @@
+- name: Import element gpg key
+  apt_key:
+    url: https://packages.element.io/debian/element-io-archive-keyring.gpg
+    state: present
+  become: yes
+
+- name: Install Element repository
+  apt_repository:
+    repo: deb https://packages.element.io/debian/ default main
+    state: present
+    filename: element
+  become: yes

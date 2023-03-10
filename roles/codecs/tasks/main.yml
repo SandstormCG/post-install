@@ -1,0 +1,33 @@
+- name: Add Packman repository for codecs
+  zypper_repository:
+    name: Packman
+    repo: 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/'
+    state: present
+
+#- name: Perform a dist-upgrade with additional arguments
+#  zypper:
+#    name: '*'
+#    state: dist-upgrade
+#    allow_vendor_change: true
+#    extra_args: '"--from\ Packman"'
+#    update_cache: true
+
+- name: Perform a dist-upgrade with additional arguments
+  shell: zypper -n dist-upgrade --from Packman --allow-vendor-change
+
+#- name: Install codecs
+#  zypper:
+#    name:
+#      - ffmpeg
+#      - gstreamer-plugins-good
+#      - gstreamer-plugins-bad
+#      - gstreamer-plugins-ugly
+#      - gstreamer-plugins-libav
+#      - libavcodev-full
+#      - vlc-codecs
+#    state: present
+#    disable_recommends: false
+#    extra_args: '--from packman'
+
+- name: Install codecs
+  shell: zypper -n install --from Packman ffmpeg gstreamer-plugins-{good,bad,ugly,libav} libavcodec-full vlc-codecs

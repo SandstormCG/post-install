@@ -1,0 +1,7 @@
+- name: Install calibre on Neon
+  include_tasks: calibre_neon.yml
+  when: distro=="neon"
+
+- name: Install calibre on Arch and Tumbleweed
+  include_tasks: calibre_arch_tw.yml
+  when: (distro=="arch") or (distro=="tw")

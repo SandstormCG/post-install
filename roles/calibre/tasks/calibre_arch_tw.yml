@@ -1,0 +1,5 @@
+- name: Install calibre
+  package:
+    name: calibre
+    state: present
+  become: yes

@@ -1,0 +1,26 @@
+- name: Install kodi package
+  package:
+    name:
+      - kodi
+    state: present
+  become: yes 
+
+#- name: Create Kodi configs direcotry
+#  file:
+#    path: {{ kodi_config_folder }}
+#    state: directory
+#    mode: "u+rw,g+rw,o-rwx"
+#  ignore_errors: yes
+
+#- name: Delete default kodi directory
+#  file:
+#    state: absent
+#    path: /home/{{ user }}/.kodi/
+#  become: no
+#  ignore_errors: yes
+
+#- name: Link shared kodi directory (symbolic link)
+#  file:
+#    src: {{ kodi_config_folder }}
+#    dest: /home/{{ user }}/.kodi
+#    state: link

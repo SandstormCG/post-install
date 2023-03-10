@@ -1,0 +1,15 @@
+---
+# tasks file for fsnaps
+- name: Install snap discover backend and snap daemon
+  apt:
+    name:
+        - plasma-discover-backend-snap
+        - snapd
+    state: absent
+  become: yes
+    
+- name: Disable f**** snaps
+  copy:
+    src: 50-fuck-snaps
+    dest: /etc/apt/preferences.d/
+    force: yes

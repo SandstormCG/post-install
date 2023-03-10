@@ -1,0 +1,103 @@
+- name: Install zsh packages
+  package:
+    name:
+      - git
+      - zsh
+      - neofetch
+      - bc
+      - sshpass
+    state: present 
+  become: yes
+
+- name: Is OMZ installed?
+  stat:
+    path: /home/{{ user }}/.oh-my-zsh/
+  register: zsh_omz
+
+- name: Install Oh My Zsh
+  shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  ignore_errors: yes
+  become: no
+  when: not zsh_omz.stat.exists
+
+- name: Set Zsh as default shell
+  shell: chsh -s /bin/zsh {{ user }}
+  when: not zsh_omz.stat.exists
+
+- name: Please alias for sudo
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    line: alias please="sudo"
+    create: yes
+  become: no
+
+- name: Run neofecth when zsh is started
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    line: neofetch
+    create: yes
+  become: no
+
+- name: Download & add passion theme
+  get_url:
+    url: https://raw.githubusercontent.com/ChesterYue/ohmyzsh-theme-passion/master/passion.zsh-theme
+    dest: /home/{{ user }}/.oh-my-zsh/themes/passion.zsh-theme
+    mode: '0644'
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  when: distro_type=="desktop"
+
+- name: Set the theme to passion
+  lineinfile:
+    path: /home/{{ user }}/.zshrc
+    search_string: 'ZSH_THEME'
+    line: ZSH_THEME="passion"
+  become: no
+  when: distro_type=="desktop" 
+
+- name: Add ssh-agent service
+  copy:
+    src: ssh-agent.service
+    dest: /home/{{ user }}/.config/systemd/user/ssh-agent.service
+    force: yes
+  become: no 
+  when: distro_type=="desktop"   
+
+- name: Enable ssh-agent service
+  shell: systemctl --user enable ssh-agent
+  ignore_errors: yes
+  become: no
+  when: distro_type=="desktop"
+
+- name: Start ssh-agent service
+  shell: systemctl --user start ssh-agent
+  ignore_errors: yes
+  become: no
+  when: distro_type=="desktop"
+
+- name: Add ssh_auth_sock to make ssh agent connect with keepass
+  lineinfile:
+    path: /home/{{ user }}/.zprofile
+    line: export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+    create: yes
+  become: no
+  when: distro_type=="desktop"
+
+- name: Create local bin/scripts folder 
+  file:
+    path: /home/{{ user }}/.local/bin/
+    state: directory
+
+- name: Insert scripts folder into path
+  blockinfile:
+    path: /home/{{ user }}/.zshrc
+    block: |
+      # set PATH so it includes user's private bin if it exists
+      if [ -d "$HOME/.local/bin" ] ; then
+          PATH="$HOME/.local/bin:$PATH"
+      fi
+      # set PATH so it includes user's private scripts if it exists
+      if [ -d "$HOME/.local/bin/Scripts" ] ; then
+          PATH="$HOME/.local/bin/Scripts:$PATH"
+      fi
+

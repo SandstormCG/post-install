@@ -1,0 +1,4 @@
+# Avoid apt install snap packages, fuck it!
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10

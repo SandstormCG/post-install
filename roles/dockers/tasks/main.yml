@@ -1,0 +1,80 @@
+- name: Install docker & docker-compose
+  include_tasks: install.yml
+
+###########################################
+## Create and link new docker volume folder
+###########################################
+- name: Delete default docker volumes folder
+  file:
+    state: absent
+    path: /var/lib/docker/volumes
+  become: yes
+
+- name: Create link to docker volumes folder
+  file:
+    src: "{{ volumes_folder }}"
+    dest: /var/lib/docker/volumes
+    state: link
+  become: yes
+
+###########################################
+## Generate docker-compose files
+###########################################
+
+#- name: Create a list of dockers
+#  set_fact:
+#    dockers: ["gitea","jellyfin"]
+
+- name: Adding vars
+  include_vars: "{{ ansible_ext }}/vars/{{ item }}.yml"
+  with_items:
+    - "{{ dockers }}"
+
+- name: Create composer directory if it does not exist
+  file:
+    path: "~/composers/{{ item }}/"
+    state: directory
+    group: "{{ group }}"
+    owner: "{{ user }}"
+    mode: 0755
+  with_items:
+    - "{{ dockers }}"
+
+- name: Generate docker-compose file
+  template:
+    src: "{{ item }}-compose.j2"
+    dest: "~/composers/{{ item }}/docker-compose.yml"
+    group: "{{ group }}"
+    owner: "{{ user }}"
+  with_items:
+    - "{{ dockers }}"
+
+###########################################
+## Configure nginx reverse proxy
+###########################################
+
+- name: Generate nginx conf file
+  template:
+    src: "{{ item }}-site.j2"
+    dest: "/etc/nginx/vhosts.d/{{ item }}.conf"
+    group: root
+    owner: root
+    mode: 0644
+  with_items:
+    - "{{ dockers }}"
+  become: yes 
+
+#- name: Soft link to enable site 
+#  file:
+#    src: "/etc/nginx/sites-available/{{ item }}"
+#    dest: "/etc/nginx/sites-enabled/{{ item }}"
+#    state: link
+#  with_items:
+#    - "{{ dockers }}"
+#  become: yes
+
+- name: Restart nginx service 
+  systemd:
+    name: nginx
+    state: restarted
+  become: yes

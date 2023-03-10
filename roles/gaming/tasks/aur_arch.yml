@@ -1,0 +1,8 @@
+- name: Install AUR libretro cores + wineproton manager for lutris
+  yay:
+    name: 
+      - libretro-mame2003-plus-git
+      - libretro-easyrpg-player
+      - protonup-qt
+    state: present
+  become: yes

@@ -1,0 +1,17 @@
+- name: Install retropie dependencies
+  apt:
+    name:
+        - git
+        - dialog
+        - unzip
+        - xmlstarlet
+    state: present
+  become: yes
+
+
+- name: Clone retropie repo
+  git:
+    repo: https://github.com/RetroPie/RetroPie-Setup.git
+    dest: /home/{{ user }}/bin/RetroPie-Setup/
+    depth: 1
+    clone: yes

@@ -1,0 +1,23 @@
+- name: Add sublime repo on arch
+  include_tasks: arch.yml
+  when: distro=="arch"
+
+- name: Add sublime repo on Neon
+  include_tasks: neon.yml
+  when: distro=="neon"
+
+- name: Add sublime repo on Tumbleweed
+  include_tasks: tw.yml
+  when: distro=="tw"
+  
+################################################################################
+####### Install sublime-text and sublime-merge
+################################################################################
+
+- name: Install sublime text and merge
+  package:
+    name:
+        - sublime-text
+        - sublime-merge
+    state: present
+  become: yes

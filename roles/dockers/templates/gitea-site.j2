@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name {{ gitea_subdomain }}.{{ domain }};
+    include snippets/whitelist.conf;
+
+    return 301 https://$server_name$request_uri;
+
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    include snippets/ssl-params.conf;
+    include snippets/whitelist.conf;
+
+    access_log /var/log/nginx/gitea.access;
+    error_log /var/log/nginx/gitea.error; 
+
+    server_name {{ gitea_subdomain }}.{{ domain }};
+
+    location / { # Note: Trailing slash
+        proxy_pass http://localhost:{{ gitea_port }}/; # Note: Trailing slash
+    }
+}
+

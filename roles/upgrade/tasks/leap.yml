@@ -1,0 +1,16 @@
+- name: sudo zypper dup
+  zypper:
+    name: '*'
+    state: dist-upgrade
+  become: yes
+
+- name: Install syncthing
+  zypper:
+    name: 
+      - syncthing
+  become: yes
+
+- name: Set a hostname
+  hostname:
+    name: "{{ hostname }}"
+  become: yes

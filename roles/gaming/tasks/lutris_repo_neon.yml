@@ -1,0 +1,4 @@
+- name: Add lutris ppa for neon
+  apt_repository:
+    repo: ppa:lutris-team/lutris
+  become: yes

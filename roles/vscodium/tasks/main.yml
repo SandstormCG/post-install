@@ -1,0 +1,11 @@
+- name: Install vscodium on Neon
+  include_tasks: neon.yml
+  when: distro=="neon"
+
+- name: Install vscodium on Tumbleweed
+  include_tasks: tw.yml
+  when: distro=="tw"
+
+- name: Install vscodium on Arch
+  include_tasks: arch.yml
+  when: distro=="arch"

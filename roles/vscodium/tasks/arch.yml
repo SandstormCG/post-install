@@ -1,0 +1,7 @@
+- name: Install vscodium
+  yay:
+    name: 
+      - vscodium-bin
+      - vscodium-bin-marketplace
+    state: present
+  become: yes

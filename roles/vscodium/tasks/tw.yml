@@ -1,0 +1,28 @@
+
+#In case vscodium repo gives error on tw
+#- name: Import VSCodium key
+#  rpm_key:
+#    state: present
+#    key: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+#  become: yes
+
+- name: Add vscodium repo and add its gpg key
+  zypper_repository:
+    name: Codium
+    repo: 'https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/rpms/'
+    auto_import_keys: true
+  become: yes
+
+- name: Update all zypper packages
+  zypper:
+    name: '*'
+    state: dist-upgrade
+    update_cache: true
+  become: yes
+
+- name: Install vscodium
+  package:
+    name:
+        - codium
+    update_cache: yes
+  become: yes

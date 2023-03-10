@@ -1,0 +1,37 @@
+- name: Add i386 packages 
+  include_tasks: i386_neon.yml
+  when: distro=="neon"
+
+- name: Add wine repo to Tumbleweed
+  include_tasks: repo_tw.yml
+  when: distro=="tw"
+
+- name: Install wine dependencies (for lutris)
+  package:
+    name: "{{ item }}"
+    state: present 
+  become: yes
+  with_items: "{{ wine_deps }}"
+
+- name: Remove steam to install package on Tumbleweed
+  include_tasks: rm_tw.yml
+  when: distro=="tw"
+
+- name: Add lutris repo on Neon
+  include_tasks: lutris_repo_neon.yml
+  when: distro=="neon"
+
+- name: Install gaming apps
+  package:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items: "{{ gaming_apps }}"
+
+- name: Install missing AUR packages
+  include_tasks: aur_arch.yml
+  when: distro=="arch"
+
+- name: Leave Retropie ready for install on Neon
+  include_tasks: retropie.yml
+  when: distro=="neon"

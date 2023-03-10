@@ -1,0 +1,101 @@
+#######################################################################################
+#######                      CONFIGURING SSH PASSTHROUGH                      #########
+#######################################################################################
+- name: Create git user with ssh key pair
+  ansible.builtin.user:
+    name: "{{ git_user }}"
+    shell: /bin/bash
+    comment: 'Git Version Control'
+    password: '!'
+    home: "/home/{{ git_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 4096
+    ssh_key_comment: "Gitea Host Key"
+    ssh_key_type: rsa
+    state: present
+  become: yes
+ 
+- name: Copy git pass to authorized keys to allow connect to gitea container 
+  shell: sudo -u {{ git_user }} cat /home/{{ git_user }}/.ssh/id_rsa.pub | sudo -u git tee -a /home/{{ git_user }}/.ssh/authorized_keys
+  become: yes
+
+- name: Set permissions for authorized keys file
+  file:
+    path: /home/{{ git_user }}/.ssh/authorized_keys
+    state: file
+    owner: "{{ git_user }}"
+    group: users
+    mode: 0600
+  become: yes
+  when: distro=="leap"
+  
+- name: Set permissions for authorized keys file
+  file:
+    path: /home/{{ git_user }}/.ssh/authorized_keys
+    state: file
+    owner: "{{ git_user }}"
+    group: "{{ git_user }}"
+    mode: 0600
+  become: yes
+  when: distro=="ub"
+
+- name: Create gitea bin folder if not exists
+  file:
+    path: /app/gitea/
+    state: directory
+    mode: 0755
+    group: users
+    owner: "{{ git_user }}"
+  when: distro=="leap"
+
+- name: Create gitea bin folder if not exists
+  file:
+    path: /app/gitea/
+    state: directory
+    mode: 0755
+    group: "{{ git_user }}"
+    owner: "{{ git_user }}"
+  when: distro=="ub"
+
+# Tengo que comprobar si he de cambiarlo por /app/gitea/gitea
+- name: Copy the gitea host executable
+  copy:
+    src: gitea
+    dest: /app/gitea/gitea
+    owner: "{{ git_user }}"
+    group: users
+  become: yes
+  when: distro=="leap"
+  
+- name: Copy the gitea host executable
+  copy:
+    src: gitea
+    dest: /app/gitea/gitea
+    owner: "{{ git_user }}"
+    group: "{{ git_user }}"
+  become: yes
+  when: distro=="ub"
+
+- name: Changing perm to +x and user of "/app/gitea/gitea"
+  file:
+    path: /app/gitea/gitea
+    dest: /app/gitea/itea
+    mode: a+x
+    state: file
+    owner: "{{ git_user }}"
+    group: users
+    mode: 0755
+  become: yes
+  when: distro=="leap"
+
+- name: Changing perm to +x and user of "/app/gitea/gitea"
+  file:
+    path: /app/gitea/gitea
+    dest: /app/gitea/itea
+    mode: a+x
+    state: file
+    owner: "{{ git_user }}"
+    group: "{{ git_user }}"
+    mode: 0755
+  become: yes
+  when: distro=="ub"

@@ -1,0 +1,21 @@
+- name: Copy the tartarus binds
+  copy:
+    src: "{{ ansible_ext }}/{{ item }}.hwdb"
+    dest: "/etc/udev/hwdb.d/{{ item }}.hwdb"
+    owner: root
+    group: root
+  with_items: "{{ gaming_devices }}"
+  become: yes
+
+#Sino funcionara el de abajo descomentar este
+- name: Reload udev rules
+  shell: udevadm hwdb --update
+  become: yes
+
+#- name: Reload udev rules
+#  shell: system-hwdb update
+#  become: yes
+
+- name: Force the use of the new udev rules
+  shell: udevadm trigger
+  become: yes

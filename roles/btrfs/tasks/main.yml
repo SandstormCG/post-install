@@ -1,0 +1,12 @@
+---
+# tasks file for btrfs
+- name: Install timeshift
+  include_tasks: timeshift.yml
+  when: btrfs_snaps=="timeshift"
+
+- name: Install snapper
+  include_tasks: snapper.yml
+  when: btrfs_snaps=="snapper"
+
+- name: Common btfs tasks
+  include_tasks: common.yml

@@ -1,0 +1,7 @@
+- name: Install discord on Neon
+  include_tasks: neon.yml
+  when: distro=="neon"
+
+- name: Install discord on Arch and Tumbleweed
+  include_tasks: arch_tw.yml
+  when: (distro=="arch") or (distro=="tw")

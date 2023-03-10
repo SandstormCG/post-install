@@ -1,0 +1,6 @@
+- name: Remove package required to install steam on tumbleweed
+  zypper:
+    name:
+        - libz-ng-compat1-32bit
+    state: absent
+  become: yes
